@@ -2,6 +2,14 @@
 
 一个无需 Google 授权的中文个人日历。前端为原生 HTML/CSS/JavaScript，可部署到 GitHub Pages；后端运行于 Cloudflare Workers，日程保存在 D1。
 
+## 已部署地址
+
+- 网页：https://unsone.github.io/shiri-calendar/
+- API 与备用网页：https://shiri-calendar-api.unsone-shiri.workers.dev
+- 源码：https://github.com/Unsone/shiri-calendar
+
+首次打开网页，在“设置与同步”中填写 `.local/连接口令.txt` 中的口令即可；服务地址已经预填。手机和电脑使用同一个口令。
+
 ## 功能
 
 - 月、周、日程列表、今天、待办视图与分类筛选。

@@ -22,6 +22,7 @@ const prefix=`repos/${publication.owner}/${publication.repo}`;
 function commit(branch,entries,create=false){
   const previous=create?null:api(`${prefix}/git/ref/heads/${branch}`).object.sha;
   const tree=api(`${prefix}/git/trees`,'POST',{tree:entries.map(([path,source])=>({path,mode:'100644',type:'blob',content:readFileSync(source,'utf8')}))});
+  if(previous&&api(`${prefix}/git/commits/${previous}`).tree.sha===tree.sha)return previous;
   const next=api(`${prefix}/git/commits`,'POST',{message:'Publish Shiri calendar',tree:tree.sha,parents:previous?[previous]:[]});
   if(create)api(`${prefix}/git/refs`,'POST',{ref:`refs/heads/${branch}`,sha:next.sha});
   else api(`${prefix}/git/refs/heads/${branch}`,'PATCH',{sha:next.sha,force:false});
@@ -31,7 +32,13 @@ const source=['.gitignore','README.md','package.json','package-lock.json','wrang
 const mainCommit=commit(publication.defaultBranch,source.map(path=>[path,path]));
 const branches=api(`${prefix}/branches?per_page=100`);
 const pagesCommit=commit('gh-pages',files('public').map(path=>[path.slice(7),path]),!branches.some(x=>x.name==='gh-pages'));
-if(!publication.pagesEnabled){api(`${prefix}/pages`,'POST',{source:{branch:'gh-pages',path:'/'}});publication.pagesEnabled=true;}
+if(!publication.pagesEnabled){
+  let pages;
+  try{pages=api(`${prefix}/pages`);}catch(error){if(!error.message.includes('404'))throw error;}
+  if(!pages)api(`${prefix}/pages`,'POST',{source:{branch:'gh-pages',path:'/'}});
+  else if(pages.source?.branch!=='gh-pages'||pages.source?.path!=='/')api(`${prefix}/pages`,'PUT',{source:{branch:'gh-pages',path:'/'}});
+  publication.pagesEnabled=true;
+}
 publication.mainCommit=mainCommit;publication.pagesCommit=pagesCommit;publication.pagesUrl=api(`${prefix}/pages`).html_url;
 writeFileSync(savedPath,JSON.stringify(publication,null,2));
 console.log(JSON.stringify(publication,null,2));
