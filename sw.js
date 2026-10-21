@@ -1,5 +1,5 @@
-const CACHE='shiri-v1';
-const FILES=['./','./index.html','./style.css','./app.js','./core.js','./config.js','./icon.svg','./manifest.webmanifest'];
+const CACHE='shiri-v2-timetable';
+const FILES=['./','./index.html','./style.css','./app.js','./core.js','./timetable.js','./config.js','./icon.svg','./manifest.webmanifest'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)));self.skipWaiting();});
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('shiri-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',event=>{
