@@ -1,4 +1,5 @@
 import {normalizeRecord} from '../public/core.js';
+import {coursePrompt} from '../public/timetable.js';
 
 const json = (body,status=200,headers={}) => new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store',...headers}});
 async function sameSecret(a,b) {
@@ -55,7 +56,7 @@ async function propose(request,env) {
   let response;
   try { response=await fetch('https://api.deepseek.com/chat/completions',{
     method:'POST',headers:{Authorization:`Bearer ${env.DEEPSEEK_API_KEY}`,'Content-Type':'application/json'},
-    body:JSON.stringify({model:env.DEEPSEEK_MODEL||'deepseek-flash',thinking:{type:'disabled'},response_format:{type:'json_object'},max_tokens:4096,messages:[{role:'system',content:instructions},{role:'user',content:JSON.stringify({request:body.prompt,existing})}]}),signal:AbortSignal.timeout(45000)
+    body:JSON.stringify({model:env.DEEPSEEK_MODEL||'deepseek-flash',thinking:{type:'disabled'},response_format:{type:'json_object'},max_tokens:4096,messages:[{role:'system',content:instructions+'\n'+coursePrompt(body.courseEnd)+'\n对于跨月或跨年的明确日期，按用户指定的完整年月日安排；缺少年份且日期已过去时，澄清年份或说明推断。不要只安排在当前可见月份。'},{role:'user',content:JSON.stringify({request:body.prompt,existing})}]}),signal:AbortSignal.timeout(45000)
   }); } catch {return json({error:'AI 连接超时，请稍后重试'},504);}
   if(!response.ok)return json({error:`DeepSeek 请求失败（${response.status}），请检查服务端密钥或账户余额`},502);
   try {
