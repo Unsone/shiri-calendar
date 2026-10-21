@@ -25,6 +25,11 @@ test('standard axis supports one-hour and two-hour lines without moving event ti
   assert.equal(hour.bands.length,24);assert.equal(two.bands.length,12);
   assert.equal(hour.project(9*60+30),608);assert.equal(two.project(9*60+30),456);
 });
+test('compact calendar reduces the time axis while keeping event geometry proportional',()=>{
+  const normal=makeScale('course',60,'22:15',1),compact=makeScale('course',60,'22:15',0.55);
+  assert.ok(Math.abs(compact.height-normal.height*0.55)<0.001);
+  assert.ok(Math.abs(compact.project(950)-normal.project(950)*0.55)<0.001);
+});
 test('overlapping events get separate columns; adjacent events can reuse a column',()=>{
   const event=(id,time,endTime)=>({id,time,endTime});
   const result=positionEvents([event('a','08:00','09:35'),event('b','09:00','10:00'),event('c','09:35','11:00'),event('d','14:00','15:00')]);
