@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS records (
+  id TEXT PRIMARY KEY,
+  payload TEXT NOT NULL,
+  revision INTEGER NOT NULL DEFAULT 1,
+  mutation_id TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS ai_usage (
+  hour TEXT PRIMARY KEY,
+  count INTEGER NOT NULL DEFAULT 0
+);

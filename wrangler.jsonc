@@ -1,0 +1,30 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "shiri-calendar-api",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "public",
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/api/*"
+    ]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "calendar-ai-db",
+      "database_id": "e9089b1e-8b1c-4176-8f11-30c8b8e91008",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "vars": {
+    "ALLOWED_ORIGINS": "http://localhost:8787,http://127.0.0.1:8787,http://localhost:4173,http://127.0.0.1:4173,https://unsone.github.io",
+    "DEEPSEEK_MODEL": "deepseek-flash"
+  },
+  "observability": {
+    "enabled": false
+  },
+  "workers_dev": true,
+  "preview_urls": false
+}
